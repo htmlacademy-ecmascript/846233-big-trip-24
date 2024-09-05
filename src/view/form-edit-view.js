@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { BLANK_TRIP_POINT, POINT_TYPES, CITIES, DateFormats } from '../consts.js';
 import { displayDateTime } from '../utils.js';
 
@@ -131,23 +131,16 @@ const createFormEditTemplate = (tripPoint) => {
   </li>`;
 };
 
-export default class FormEditView {
+export default class FormEditView extends AbstractView{
+  #tripPoint = null;
+
   constructor(tripPoint = BLANK_TRIP_POINT) {
-    this.tripPoint = tripPoint;
+    super();
+    this.#tripPoint = tripPoint;
   }
 
-  getTemplate() {
-    return createFormEditTemplate(this.tripPoint);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createFormEditTemplate(this.#tripPoint);
   }
 }
+//  отрисовывается 1 раз, но должен располагаться первым в списке

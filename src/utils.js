@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration.js';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import { DateFormats } from './consts.js';
+import { DateFormats } from './consts';
 
 dayjs.extend(duration);
 dayjs.extend(utc);
@@ -28,6 +28,7 @@ const displayDateTime = (date, dateFormat = DateFormats.DATE_TIME_SYSTEM) => dat
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
+// функции для моков
 const getRandomArrayElement = (items) => items[Math.floor(Math.random() * items.length)];
 const getRandomBoolean = () => Math.random() < 0.5;
 const getRandomInt = (max) => Math.round(Math.random() * max);

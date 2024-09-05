@@ -1,4 +1,4 @@
-import { render } from '../render.js';
+import { render } from '../framework/render.js';
 import FormEditView from '../view/form-edit-view.js';
 import DestinationPointView from '../view/destination-point-view.js';
 import DestinationPointsView from '../view/destination-points-view.js';
@@ -12,14 +12,18 @@ export default class MainPresenter {
   }
 
   init() {
-    this.tripPoints = [...this.model.getTripPoints()];
+    this.tripPoints = [...this.model.tripPoints];
 
     render(new SortView(), this.container);
 
     const tripPointList = new DestinationPointsView();
     render(tripPointList, this.container);
-    render(new FormEditView(this.tripPoints[0]), tripPointList.getElement());
+    render(new FormEditView(this.tripPoints[0]), tripPointList.element);
 
-    this.tripPoints.forEach((tripPoint) => render(new DestinationPointView(tripPoint), tripPointList.getElement()));
+    this.tripPoints.forEach((tripPoint) => {
+      const point = new DestinationPointView(tripPoint);
+
+      render(point, tripPointList.element);
+    });
   }
 }

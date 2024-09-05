@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { displayDate, displayDateMonth, displayDateTime, displayTime, calculateDuration } from '../utils.js';
 
 
@@ -30,13 +30,14 @@ const createOffersTemplate = (offers) => {
 const createDestinationPointTemplate = (tripPoint) => {
   const {type, dateFrom, dateTo, destination, price, offers, isFavorite} = tripPoint;
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
+  const lowerType = type.toLowerCase();
 
   return `
   <li class="trip-events__item">
     <div class="event">
       <time class="event__date" datetime="${displayDate(dateFrom)}">${displayDateMonth(dateFrom)}</time>
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="img/icons/${lowerType}.png" alt="Event type icon">
       </div>
       <h3 class="event__title">${type} ${destination.name}</h3>
         ${createPointScheduleTemplate(dateFrom, dateTo)}
@@ -60,24 +61,15 @@ const createDestinationPointTemplate = (tripPoint) => {
   </li>`;
 };
 
-export default class DestinationPointView {
+export default class DestinationPointView extends AbstractView {
+  #tripPoint = null;
+
   constructor(tripPoint) {
-    this.tripPoint = tripPoint;
+    super();
+    this.#tripPoint = tripPoint;
   }
 
-  getTemplate() {
-    return createDestinationPointTemplate(this.tripPoint);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createDestinationPointTemplate(this.#tripPoint);
   }
 }

@@ -5,16 +5,20 @@ import { getRandomBoolean } from '../utils.js';
 
 
 export default class PointModel {
-  constructor() {
-    this.destinations = getMockedDestionations();
-    this.offers = getMockedOffers();
+  #tripPoints = null;
+  #destinations = null;
+  #offers = null;
 
-    this.tripPoints = getMockedPoints().map((tripPoint) => {
-      const { offers } = this.offers.find((offer) => offer.type === tripPoint.type);
+  constructor() {
+    this.#destinations = getMockedDestionations();
+    this.#offers = getMockedOffers();
+
+    this.#tripPoints = getMockedPoints().map((tripPoint) => {
+      const { offers } = this.#offers.find((offer) => offer.type === tripPoint.type);
 
       return {
         ...tripPoint,
-        destination: this.destinations.find((dest) => dest.id === tripPoint.destination),
+        destination: this.#destinations.find((dest) => dest.id === tripPoint.destination),
         offers: offers.map((offer) => ({
           type: tripPoint.type,
           ...offer,
@@ -24,15 +28,15 @@ export default class PointModel {
     });
   }
 
-  getTripPoints() {
-    return this.tripPoints;
+  get tripPoints() {
+    return this.#tripPoints;
   }
 
-  getOffers() {
+  get offers() {
     return this.offers;
   }
 
-  getDestinations() {
+  get destinations() {
     return this.destinations;
   }
 }
