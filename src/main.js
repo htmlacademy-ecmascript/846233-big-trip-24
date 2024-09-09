@@ -1,6 +1,6 @@
-import HeaderPresenter from './presenter/header-presenter';
-import MainPresenter from './presenter/main-presenter';
-import PointModel from './model/point-model';
+import HeaderPresenter from './presenter/header-presenter.js';
+import MainPresenter from './presenter/main-presenter.js';
+import PointModel from './model/point-model.js';
 
 const run = () => {
   const eventsElement = document.querySelector('.trip-events');

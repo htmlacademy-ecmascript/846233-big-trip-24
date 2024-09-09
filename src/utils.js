@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration.js';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import { DateFormats } from './consts';
+import { DateFormats } from './consts.js';
 
 dayjs.extend(duration);
 dayjs.extend(utc);

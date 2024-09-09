@@ -1,6 +1,6 @@
-import FilterView from '../view/filter-view';
-import InfoView from '../view/info-view';
-import { RenderPosition, render } from '../framework/render';
+import FilterView from '../view/filter-view.js';
+import InfoView from '../view/info-view.js';
+import { RenderPosition, render } from '../framework/render.js';
 
 export default class HeaderPresenter {
   constructor ({ filterContainer, infoContainer }) {

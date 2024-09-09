@@ -73,3 +73,5 @@ export default class DestinationPointView extends AbstractView {
     return createDestinationPointTemplate(this.#tripPoint);
   }
 }
+
+

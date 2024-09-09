@@ -20,3 +20,4 @@ const getRandomOffer = () => getRandomArrayElement(offers);
 
 
 export {getMockedOffers, getRandomOffer};
+

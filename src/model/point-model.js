@@ -1,7 +1,7 @@
 import { getMockedPoints } from '../mock/point-mock.js';
 import { getMockedDestionations } from '../mock/destination.js';
-import { getMockedOffers } from '../mock/offer-mock.js';
-import { getRandomBoolean } from '../utils.js';
+import { getMockedOffers } from '../mock/offer-mock';
+import { getRandomBoolean } from '../utils';
 
 
 export default class PointModel {
@@ -33,10 +33,10 @@ export default class PointModel {
   }
 
   get offers() {
-    return this.offers;
+    return this.#offers;
   }
 
   get destinations() {
-    return this.destinations;
+    return this.#destinations;
   }
 }
