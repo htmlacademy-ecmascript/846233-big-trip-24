@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { SORT_TYPES } from '../consts.js';
+import { SORT_TYPES } from '../const.js';
 
 const createSortItemTemplate = (type) => {
   const lowerType = type.toLowerCase();

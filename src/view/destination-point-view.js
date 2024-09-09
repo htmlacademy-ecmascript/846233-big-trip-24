@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { displayDate, displayDateMonth, displayDateTime, displayTime, calculateDuration } from '../utils.js';
+import { displayDate, displayDateMonth, displayDateTime, displayTime, calculateDuration } from '../utils/date.js';
 
 
 const createPointScheduleTemplate = (dateFrom, dateTo) => `

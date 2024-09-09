@@ -20,7 +20,7 @@ const DESCRIPTIONS = [
   'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.'
 ];
 
-const BLANK_TRIP_POINT = {
+const BlankTripPoint = { // переименовать как перечисление
   type: DEFAULT_POINT_TYPE,
   dateFrom: new Date(),
   dateTo: null,
@@ -28,6 +28,20 @@ const BLANK_TRIP_POINT = {
   price: 0,
   offers: [],
   isFavorite: false,
+};
+
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past',
+};
+
+const DestinationEmptyMassages = {
+  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.FUTURE]: 'There are no past events now',
+  [FilterType.PRESENT]: 'There are no past events now',
+  [FilterType.PAST]: 'There are no past events now',
 };
 
 const DateFormats = {
@@ -42,10 +56,12 @@ const DateFormats = {
 };
 
 export {
-  BLANK_TRIP_POINT,
+  BlankTripPoint,
+  DateFormats,
+  FilterType,
+  DestinationEmptyMassages,
   POINT_TYPES,
   CITIES,
-  DateFormats,
   FILTER_TYPES,
   DEFAULT_POINT_TYPE,
   SORT_TYPES,
