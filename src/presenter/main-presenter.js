@@ -23,8 +23,14 @@ export default class MainPresenter {
     render(new SortView(), this.#container);
     render(new FormEditView(this.#tripPoints[0]), this.#destinationPointsComponent.element);
 
-    for (let i = 1; i < this.#tripPoints.length; i++) {
-      render(new DestinationPointView(this.#tripPoints[i]), this.#destinationPointsComponent.element);
+    for (let i = 0; i < this.#tripPoints.length; i++) {
+      this.#renderTripPoint(this.#tripPoints[i]);
     }
+  }
+
+  #renderTripPoint(task) {
+    const tripPointComponent = new DestinationPointView(task);
+
+    render(tripPointComponent, this.#destinationPointsComponent.element);
   }
 }
