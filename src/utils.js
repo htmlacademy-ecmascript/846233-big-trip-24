@@ -28,6 +28,7 @@ const displayDateTime = (date, dateFormat = DateFormats.DATE_TIME_SYSTEM) => dat
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
+// функции для моков
 const getRandomArrayElement = (items) => items[Math.floor(Math.random() * items.length)];
 const getRandomBoolean = () => Math.random() < 0.5;
 const getRandomInt = (max) => Math.round(Math.random() * max);

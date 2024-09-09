@@ -6,7 +6,7 @@ const offerID = getID();
 const createOffer = () => ({
   id: offerID(),
   title: getRandomArrayElement(OFFERS),
-  price: getRandomInt(1000)
+  price: getRandomInt(300)
 });
 
 const offers = POINT_TYPES.map((pointType) => ({
@@ -20,3 +20,4 @@ const getRandomOffer = () => getRandomArrayElement(offers);
 
 
 export {getMockedOffers, getRandomOffer};
+

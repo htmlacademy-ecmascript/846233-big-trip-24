@@ -17,7 +17,7 @@ const destinations = CITIES.map((city) =>
   })
 );
 
-const getMockedDestionations = () => destinations;
+const getMockedDestinations = () => destinations;
 const getRandomDestination = () => getRandomArrayElement(destinations);
 
-export { getMockedDestionations, getRandomDestination };
+export { getMockedDestinations, getRandomDestination };

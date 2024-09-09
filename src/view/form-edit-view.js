@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { BLANK_TRIP_POINT, POINT_TYPES, CITIES, DateFormats } from '../consts.js';
 import { displayDateTime } from '../utils.js';
 
@@ -131,23 +131,45 @@ const createFormEditTemplate = (tripPoint) => {
   </li>`;
 };
 
-export default class FormEditView {
-  constructor(tripPoint = BLANK_TRIP_POINT) {
-    this.tripPoint = tripPoint;
+export default class FormEditView extends AbstractView{
+  #tripPoint = null;
+  #offers = null;
+  #destinations = null;
+  #submitHandler = null;
+  #cancelHandler = null;
+
+  constructor({tripPoint = BLANK_TRIP_POINT, offers, destinations, onFormSubmit, onFormCancel}) {
+    super();
+    this.#tripPoint = tripPoint;
+    this.#offers = offers;
+    this.#destinations = destinations;
+    this.#submitHandler = onFormSubmit;
+    this.#cancelHandler = onFormCancel;
+
+    this.element.addEventListener('submit', this.#onFormSubmit);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCancelForm);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onCancelForm);
   }
 
-  getTemplate() {
-    return createFormEditTemplate(this.tripPoint);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
+  get template() {
+    return createFormEditTemplate(this.#tripPoint, this.#offers, this.#destinations);
   }
 
   removeElement() {
-    this.element = null;
+    super.removeElement();
+    this.element.removeEventListener('submit', this.#onFormSubmit);
+    this.element.querySelector('.event__rollup-btn').removeEventListener('click', this.#onCancelForm);
+    this.element.querySelector('.event__reset-btn').removeEventListener('click', this.#onCancelForm);
   }
+
+  #onFormSubmit = (evt) => {
+    evt.preventDefault();
+    this.#submitHandler();
+  };
+
+  #onCancelForm = (evt) => {
+    evt.preventDefault();
+    this.#cancelHandler();
+  };
 }
+
