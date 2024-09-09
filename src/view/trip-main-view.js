@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { FILTER_TYPES } from '../consts.js';
+import { FILTER_TYPES } from '../const.js';
 
 const createFilterItemTemplate = (type) => {
   const lowerType = type.toLowerCase();

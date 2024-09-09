@@ -1,5 +1,6 @@
-import { getRandomArrayElement, getID, getRandomInt, getRandomBoolean, getDateWithRandomTime } from '../utils.js';
-import { POINT_COUNT, POINT_TYPES } from '../consts.js';
+import { getRandomArrayElement, getID, getRandomInt, getRandomBoolean,
+  getDateWithRandomTime } from './mock-utils.js';
+import { POINT_COUNT, POINT_TYPES } from '../const.js';
 import { getRandomDestination } from './destination.js';
 
 

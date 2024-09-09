@@ -1,5 +1,5 @@
-import { getRandomArrayElement, getID, getRandomInt } from '../utils.js';
-import { POINT_TYPES, OFFERS } from '../consts.js';
+import { getRandomArrayElement, getID, getRandomInt } from './mock-utils.js';
+import { POINT_TYPES, OFFERS } from '../const.js';
 
 const offerID = getID();
 

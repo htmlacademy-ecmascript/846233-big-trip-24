@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { BLANK_TRIP_POINT, POINT_TYPES, CITIES, DateFormats } from '../consts.js';
-import { displayDateTime } from '../utils.js';
+import { BlankTripPoint, POINT_TYPES, CITIES, DateFormats } from '../const.js';
+import { displayDateTime } from '../utils/date.js';
 
 const createPointTypeItemTemplate = (type) => {
   const lowerType = type.toLowerCase();
@@ -138,7 +138,7 @@ export default class FormEditView extends AbstractView{
   #submitHandler = null;
   #cancelHandler = null;
 
-  constructor({tripPoint = BLANK_TRIP_POINT, offers, destinations, onFormSubmit, onFormCancel}) {
+  constructor({tripPoint = BlankTripPoint, offers, destinations, onFormSubmit, onFormCancel}) {
     super();
     this.#tripPoint = tripPoint;
     this.#offers = offers;
