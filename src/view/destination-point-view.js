@@ -27,8 +27,8 @@ const createOffersTemplate = (offers) => {
   `).join('');
 };
 
-const createDestinationPointTemplate = (tripPoint) => {
-  const {type, dateFrom, dateTo, destination, price, offers, isFavorite} = tripPoint;
+const createDestinationPointTemplate = (tripPoint) => { //изменить параметры
+  const { type, dateFrom, dateTo, destination, price, offers, isFavorite } = tripPoint;
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
   const lowerType = type.toLowerCase();
 
@@ -63,15 +63,34 @@ const createDestinationPointTemplate = (tripPoint) => {
 
 export default class DestinationPointView extends AbstractView {
   #tripPoint = null;
+  #offers = null;
+  #destinations = null;
+  #clickHandler = null;
+  #rollupButton = null;
 
-  constructor(tripPoint) {
+  constructor({tripPoint, offers, destinations, onEditClick}) {
     super();
     this.#tripPoint = tripPoint;
+    this.#offers = offers;
+    this.#destinations = destinations;
+    this.#clickHandler = onEditClick;
+    this.#rollupButton = this.element.querySelector('.event__rollup-btn');
+    this.#rollupButton.addEventListener('click', this.#onClick);
   }
 
   get template() {
-    return createDestinationPointTemplate(this.#tripPoint);
+    return createDestinationPointTemplate(this.#tripPoint, this.#offers, this.#destinations);// ???
   }
+
+  removeElement() {
+    super.removeElement();
+    this.#rollupButton.removeEventListener('click', this.#onClick);
+  }
+
+  #onClick = (evt) => {
+    evt.preventDefault();
+    this.#clickHandler();
+  };
 }
 
 

@@ -1,7 +1,7 @@
 import { getMockedPoints } from '../mock/point-mock.js';
-import { getMockedDestionations } from '../mock/destination.js';
-import { getMockedOffers } from '../mock/offer-mock';
-import { getRandomBoolean } from '../utils';
+import { getMockedDestinations } from '../mock/destination.js';
+import { getMockedOffers } from '../mock/offer-mock.js';
+import { getRandomBoolean } from '../utils.js';
 
 
 export default class PointModel {
@@ -10,9 +10,8 @@ export default class PointModel {
   #offers = null;
 
   constructor() {
-    this.#destinations = getMockedDestionations();
+    this.#destinations = getMockedDestinations();
     this.#offers = getMockedOffers();
-
     this.#tripPoints = getMockedPoints().map((tripPoint) => {
       const { offers } = this.#offers.find((offer) => offer.type === tripPoint.type);
 
