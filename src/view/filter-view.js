@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { firstLetterUpperCase, getIsCheckedAttr } from '../utils/common.js';
+import { firstLetterUpperCase, getIsCheckedAttr } from './utils/common.js';
 
 const createFilterItemTemplate = (value, isChecked) =>`
   <div class="trip-filters__filter">

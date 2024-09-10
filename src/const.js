@@ -20,7 +20,7 @@ const DESCRIPTIONS = [
   'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.'
 ];
 
-const BlankTripPoint = { // переименовать как перечисление
+const BlankTripPoint = {
   type: DEFAULT_POINT_TYPE,
   dateFrom: new Date(),
   dateTo: null,

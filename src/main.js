@@ -10,6 +10,7 @@ const run = () => {
   const headerMainElement = document.querySelector('.trip-main');
 
   const pointModel = new PointModel();
+  pointModel.init();
 
   const headerPresenter = new HeaderPresenter(
     {

@@ -1,89 +1,73 @@
-import { render, replace } from '../framework/render.js';
-import { isEscapeKey, isEmpty } from '../utils/common.js';
-import FormEditView from '../view/form-edit-view.js';
-import DestinationPointView from '../view/destination-point-view.js';
+import { render } from '../framework/render.js';
+import { isEmpty } from '../view/utils/common.js';
 import DestinationPointsView from '../view/destination-points-view.js';
 import DestinationEmptyView from '../view/destination-empty-view.js';
 import SortView from '../view/sort-view.js';
+import PointPresenter from './point-presenter.js';
+import { updateItem } from './presenter-utils.js';
 
 export default class MainPresenter {
   #container = null;
   #model = null;
+  #tripPoints = [];
   #destinationPointsView = new DestinationPointsView();
+  #pointPresenters = new Map();
 
   constructor({container, model}) {
     this.#container = container;
     this.#model = model;
-    this.#destinationPointsView = new DestinationPointsView();
   }
 
   init() {
-    this.#renderSortView();
-    this.#renderTripPoints(this.#model);
+    this.#tripPoints = [...this.#model.tripPoints];
+    this.#clearTripPoints();
+    this.#renderTripPoints();
   }
 
   #renderEmptyView() {
-    render(new DestinationEmptyView({filter: this.#model.filters[0]}), this.#container);
+    render(
+      new DestinationEmptyView({ filter: this.#model.filters[0]}), this.#container
+    );
   }
 
   #renderSortView() {
-    render(new SortView(), this.#container);
+    render(
+      new SortView({
+        sortTypes: this.#model.sortTypes, currentSortType: this.#model.sortTypes[0],
+      }), this.#container
+    );
   }
 
-  #renderTripPoints({tripPoints}) {
-    if (isEmpty(tripPoints)){
+  #renderTripPoints() {
+    if (isEmpty(this.#tripPoints)){
       this.#renderEmptyView();
       return;
     }
 
-    for (let i = 0; i < tripPoints.length; i++) {
-      render(this.#destinationPointsView, this.#container);
-      this.#renderTripPoint(tripPoints[i]);
-    }
+    this.#renderSortView();
+    render(this.#destinationPointsView, this.#container);
+
+    this.#tripPoints.forEach((tripPoint) => {
+      const pointPresenter = new PointPresenter({
+        model: this.#model,
+        container: this.#destinationPointsView.element,
+        onDestinationPointChange: this.#onDestinationPointChange,
+        onModeChange: this.#onDestinationPointModeChange,
+      });
+      pointPresenter.init(tripPoint);
+      this.#pointPresenters.set(tripPoint.id, pointPresenter);
+    });
   }
 
-  #renderTripPoint(tripPoint) {
-    const offers = this.#model.offers;
-    const destinations = this.#model.destinations;
-
-    const onEscKeydown = () => {
-      if (isEscapeKey) {
-        switchToViewMode();
-      }
-    };
-
-    const onEditClick = () => switchToEditMode();
-    const onFormSubmit = () => switchToViewMode();
-    const onFormCancel = () => switchToViewMode();
-
-    const destinationPointView = new DestinationPointView({
-      // eslint-disable-next-line no-undef
-      tripPoint,
-      offers,
-      destinations,
-      onEditClick: onEditClick,
-    });
-
-    const formEditView = new FormEditView({
-      // eslint-disable-next-line no-undef
-      tripPoint,
-      offers,
-      destinations,
-      onFormSubmit: onFormSubmit,
-      onFormCancel: onFormCancel,
-    });
-
-    function switchToEditMode() {
-      replace(formEditView, destinationPointView);
-      document.addEventListener('keydown', onEscKeydown);
-    }
-
-    function switchToViewMode() {
-      replace(destinationPointView, formEditView);
-      document.removeEventListener('keydown', onEscKeydown);
-    }
-
-    render(destinationPointView, this.#destinationPointsView.element);
+  #clearTripPoints() {
+    this.#pointPresenters.forEach((pointPresenter) => pointPresenter.destroy());
+    this.#pointPresenters.clear();
   }
+
+  #onDestinationPointChange = (updatedTripPoint) => {
+    this.#tripPoints = updateItem(this.#tripPoints, updatedTripPoint);
+    this.#pointPresenters.get(updatedTripPoint.id).init(updatedTripPoint);
+  };
+
+  #onDestinationPointModeChange = () => this.#pointPresenters.forEach((presenter) => presenter.reset());
 }
-

@@ -1,5 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { displayDate, displayDateMonth, displayDateTime, displayTime, calculateDuration } from '../utils/date.js';
+import { displayDate, displayDateMonth, displayDateTime, displayTime, calculateDuration } from './utils/date.js';
+import { isEmpty } from './utils/common.js';
 
 
 const createPointScheduleTemplate = (dateFrom, dateTo) => `
@@ -14,7 +15,7 @@ const createPointScheduleTemplate = (dateFrom, dateTo) => `
 `;
 
 const createOffersTemplate = (offers) => {
-  if (offers.length === 0) {
+  if (isEmpty(offers)) {
     return '';
   }
 
@@ -27,26 +28,28 @@ const createOffersTemplate = (offers) => {
   `).join('');
 };
 
-const createDestinationPointTemplate = (tripPoint) => { //изменить параметры
-  const { type, dateFrom, dateTo, destination, price, offers, isFavorite } = tripPoint;
+const createDestinationPointTemplate = (tripPoint, offers, destinations) => {
+  const { type, dateFrom, dateTo, price, isFavorite } = tripPoint;
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
-  const lowerType = type.toLowerCase();
+  const {name: destinationName} = destinations.find((destination) => destination.id === tripPoint.destination);
+  const {offers: typedOffers} = offers.find((offer) => offer.type === type);
+  const selectedOffers = typedOffers.filter((offer) => tripPoint.offers.includes(offer.id));
 
   return `
   <li class="trip-events__item">
     <div class="event">
       <time class="event__date" datetime="${displayDate(dateFrom)}">${displayDateMonth(dateFrom)}</time>
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="img/icons/${lowerType}.png" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">${type} ${destination.name}</h3>
+      <h3 class="event__title">${type} ${destinationName}</h3>
         ${createPointScheduleTemplate(dateFrom, dateTo)}
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${price}</span>
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${createOffersTemplate(offers)}
+        ${createOffersTemplate(selectedOffers)}
       </ul>
       <button class="event__favorite-btn  ${favoriteClassName}" type="button">
         <span class="visually-hidden">Add to favorite</span>
@@ -65,17 +68,23 @@ export default class DestinationPointView extends AbstractView {
   #tripPoint = null;
   #offers = null;
   #destinations = null;
-  #clickHandler = null;
+  #editClickHandler = null;
   #rollupButton = null;
+  #favoriteClickHandler = null;
+  #favoriteButton = null;
 
-  constructor({tripPoint, offers, destinations, onEditClick}) {
+  constructor({tripPoint, offers, destinations, onEditClick, onFavoriteClick}) {
     super();
     this.#tripPoint = tripPoint;
     this.#offers = offers;
     this.#destinations = destinations;
-    this.#clickHandler = onEditClick;
+    this.#editClickHandler = onEditClick;
+    this.#favoriteClickHandler = onFavoriteClick;
     this.#rollupButton = this.element.querySelector('.event__rollup-btn');
+    this.#favoriteButton = this.element.querySelector('.event__favorite-btn');
+
     this.#rollupButton.addEventListener('click', this.#onClick);
+    this.#favoriteButton.addEventListener('click', this.#onFavoriteClick);
   }
 
   get template() {
@@ -85,11 +94,17 @@ export default class DestinationPointView extends AbstractView {
   removeElement() {
     super.removeElement();
     this.#rollupButton.removeEventListener('click', this.#onClick);
+    this.#favoriteButton.removeEventListener('click', this.#onFavoriteClick);
   }
 
   #onClick = (evt) => {
     evt.preventDefault();
-    this.#clickHandler();
+    this.#editClickHandler();
+  };
+
+  #onFavoriteClick = (evt) => {
+    evt.preventDefault();
+    this.#favoriteClickHandler();
   };
 }
 
