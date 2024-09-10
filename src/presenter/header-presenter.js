@@ -1,4 +1,3 @@
-import { RenderPosition, render } from '../framework/render.js';
 import FilterView from '../view/filter-view.js';
 import InfoView from '../view/info-view.js';
 
@@ -14,16 +13,28 @@ export default class HeaderPresenter {
   }
 
   init() {
-    this.#renderSum(this.#model.tripPoints);
-    this.#renderFilters(this.#model.filters);
+    this.#renderSum(this.#model);
+    this.#renderFilters(this.#model);
   }
 
-  #renderSum(tripPoints) {
-    render(new InfoView(tripPoints), this.#infoContainer, RenderPosition.AFTERBEGIN);
+  #renderSum({tripInfo}) {
+    new InfoView({ tripInfo, container: this.#infoContainer });
   }
 
-  #renderFilters(filters) {
-    render(new FilterView({filters, currentFilter: filters[0]}), this.#filterContainer);
-
+  #renderFilters({ filters, currentFilter }) {
+    new FilterView({
+      filters,
+      currentFilter,
+      container: this.#filterContainer,
+      onFilterChange: this.#onFilterChange
+    });
   }
+
+  #onFilterChange = (newFilter) => {
+    if (this.#model.currentFilter === newFilter) {
+      return;
+    }
+
+    this.#model.currentFilter = newFilter;
+  };
 }

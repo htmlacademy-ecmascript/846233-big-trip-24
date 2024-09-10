@@ -1,4 +1,3 @@
-import { render } from '../framework/render.js';
 import { isEmpty } from '../view/utils/common.js';
 import DestinationPointsView from '../view/destination-points-view.js';
 import DestinationEmptyView from '../view/destination-empty-view.js';
@@ -10,7 +9,9 @@ export default class MainPresenter {
   #container = null;
   #model = null;
   #tripPoints = [];
-  #destinationPointsView = new DestinationPointsView();
+  #destinationPointsView = null;
+  #sortView = null;
+  #destinationEmptyView = null;
   #pointPresenters = new Map();
 
   constructor({container, model}) {
@@ -24,28 +25,32 @@ export default class MainPresenter {
     this.#renderTripPoints();
   }
 
-  #renderEmptyView() {
-    render(
-      new DestinationEmptyView({ filter: this.#model.filters[0]}), this.#container
-    );
+  #renderDestinationEmptyView() {
+    this.#destinationEmptyView = new DestinationEmptyView({ filter: this.#model.currentFilter, container: this.#container });
   }
 
-  #renderSortView() {
-    render(
-      new SortView({
-        sortTypes: this.#model.sortTypes, currentSortType: this.#model.sortTypes[0],
-      }), this.#container
-    );
+
+  #renderSortView({ sortTypes, currentSort }) {
+    if (this.#sortView) {
+      return;
+    }
+
+    this.#sortView = new SortView({
+      sortTypes,
+      currentSort,
+      container: this.#container,
+      onSortTypeChange: this.#onSortTypeChange,
+    });
   }
 
   #renderTripPoints() {
     if (isEmpty(this.#tripPoints)){
-      this.#renderEmptyView();
+      this.#renderDestinationEmptyView();
       return;
     }
 
-    this.#renderSortView();
-    render(this.#destinationPointsView, this.#container);
+    this.#renderSortView(this.#model);
+    this.#destinationPointsView = new DestinationPointsView({ container: this.#container });
 
     this.#tripPoints.forEach((tripPoint) => {
       const pointPresenter = new PointPresenter({
@@ -62,6 +67,9 @@ export default class MainPresenter {
   #clearTripPoints() {
     this.#pointPresenters.forEach((pointPresenter) => pointPresenter.destroy());
     this.#pointPresenters.clear();
+    if (this.#destinationEmptyView) {
+      this.#destinationEmptyView.destroy();
+    }
   }
 
   #onDestinationPointChange = (updatedTripPoint) => {
@@ -70,4 +78,13 @@ export default class MainPresenter {
   };
 
   #onDestinationPointModeChange = () => this.#pointPresenters.forEach((presenter) => presenter.reset());
+
+  #onSortTypeChange = (newSort) => {
+    if (this.#model.currentSort === newSort) {
+      return;
+    }
+
+    this.#model.currentSort = newSort;
+    this.init();
+  };
 }

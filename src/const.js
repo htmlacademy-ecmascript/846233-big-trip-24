@@ -2,7 +2,6 @@ const POINT_TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-i
 const CITIES = ['Moscow', 'Tokio', 'London', 'Paris', 'Roma'];
 const DEFAULT_POINT_TYPE = 'Flight';
 const FILTER_TYPES = ['Everything', 'Future', 'Present', 'Past'];
-const SORT_TYPES = ['Day', 'Event', 'Time', 'Price', 'Offers'];
 const OFFERS = ['Add luggage', 'Switch to comfort class', 'Add meal', 'Choose seats', 'Travel by train'];
 const SELECTED_OFFERS_LIMIT = 3;
 const SOME_PICTURES_LIMIT = 3;
@@ -30,6 +29,14 @@ const BlankTripPoint = {
   isFavorite: false,
 };
 
+const SortTypes = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFERS: 'offers'
+};
+
 const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
@@ -45,7 +52,8 @@ const DestinationEmptyMassages = {
 };
 
 const DateFormats = {
-  DATE_MONTH: 'MMM D',
+  DAY_MONTH: 'D MMM',
+  MONTH_DAY: 'MMM D',
   DATE: 'YYYY-MM-DD',
   TIME: 'HH:mm',
   DATE_TIME_SYSTEM: 'YYYY-MM-DDTHH:mm',
@@ -59,12 +67,12 @@ export {
   BlankTripPoint,
   DateFormats,
   FilterType,
+  SortTypes,
   DestinationEmptyMassages,
   POINT_TYPES,
   CITIES,
   FILTER_TYPES,
   DEFAULT_POINT_TYPE,
-  SORT_TYPES,
   SELECTED_OFFERS_LIMIT,
   SOME_PICTURES_LIMIT,
   POINT_COUNT,
