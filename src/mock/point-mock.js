@@ -4,7 +4,7 @@ import {
   getRandomInt,
   getRandomBoolean,
   getDateWithRandomTime
-} from './mock-utils';
+} from './mock-utils.js';
 import { POINT_COUNT, POINT_TYPES, SELECTED_OFFERS_LIMIT } from '../const.js';
 import { getRandomDestination } from './destination.js';
 import { getMockedOffers } from './offer-mock.js';

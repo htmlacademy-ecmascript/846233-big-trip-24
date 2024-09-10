@@ -1,4 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
+import { render, remove } from '../framework/render.js';
 import { DestinationEmptyMassages } from '../const.js';
 
 const createEmptyTemplate = (filters) => `
@@ -7,12 +8,17 @@ const createEmptyTemplate = (filters) => `
 export default class DestinationEmptyView extends AbstractView {
   #filter = '';
 
-  constructor({filter}) {
+  constructor({filter, container}) {
     super();
     this.#filter = filter;
+    render(this, container);
   }
 
   get template() {
     return createEmptyTemplate(this.#filter);
+  }
+
+  destroy() {
+    remove(this);
   }
 }
