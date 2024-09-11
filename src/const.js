@@ -19,7 +19,7 @@ const DESCRIPTIONS = [
   'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.'
 ];
 
-const BlankTripPoint = { // переименовать как перечисление
+const BlankTripPoint = {
   type: DEFAULT_POINT_TYPE,
   dateFrom: new Date(),
   dateTo: null,
@@ -57,10 +57,16 @@ const DateFormats = {
   MONTH_DAY: 'MMM D',
   TIME: 'HH:mm',
   DATE_TIME_SYSTEM: 'YYYY-MM-DDTHH:mm',
-  DATE_TIME: 'YY/MM/DD HH:mm',
+  DATE_TIME: 'DD/MM/YY HH:mm',
   DAY: 'DD[d] HH[h] mm[m]',
   HOURS: 'HH[h] mm[m]',
-  MINUTES: 'mm[m]'
+  MINUTES: 'mm[m]',
+  FLATPICKR: 'd/m/y H:i',
+};
+
+const DefaultFlatpickrConfig = {
+  dateFormat: DateFormats.FLATPICKR,
+  enableTime: true,
 };
 
 const Mode = {
@@ -84,6 +90,7 @@ export {
   DestinationEmptyMassages,
   Mode,
   ButtonTypes,
+  DefaultFlatpickrConfig,
   POINT_TYPES,
   CITIES,
   FILTER_TYPES,
