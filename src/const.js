@@ -1,7 +1,7 @@
-const POINT_TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
+const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const CITIES = ['Moscow', 'Tokio', 'London', 'Paris', 'Roma'];
 const DEFAULT_POINT_TYPE = 'Flight';
-const FILTER_TYPES = ['Everything', 'Future', 'Present', 'Past'];
+const FILTER_TYPES = ['everything', 'future', 'present', 'past'];
 const OFFERS = ['Add luggage', 'Switch to comfort class', 'Add meal', 'Choose seats', 'Travel by train'];
 const SELECTED_OFFERS_LIMIT = 3;
 const SOME_PICTURES_LIMIT = 3;
@@ -19,7 +19,7 @@ const DESCRIPTIONS = [
   'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.'
 ];
 
-const BlankTripPoint = {
+const BlankTripPoint = { // переименовать как перечисление
   type: DEFAULT_POINT_TYPE,
   dateFrom: new Date(),
   dateTo: null,
@@ -52,9 +52,9 @@ const DestinationEmptyMassages = {
 };
 
 const DateFormats = {
+  DATE: 'YYYY-MM-DD',
   DAY_MONTH: 'D MMM',
   MONTH_DAY: 'MMM D',
-  DATE: 'YYYY-MM-DD',
   TIME: 'HH:mm',
   DATE_TIME_SYSTEM: 'YYYY-MM-DDTHH:mm',
   DATE_TIME: 'YY/MM/DD HH:mm',
@@ -63,12 +63,27 @@ const DateFormats = {
   MINUTES: 'mm[m]'
 };
 
+const Mode = {
+  VIEW: 'View',
+  EDIT: 'Edit',
+};
+
+const ButtonTypes = {
+  SAVE: 'Save',
+  SAVING: 'Saving',
+  DELETE: 'Delete',
+  DELETING: 'Deleting',
+  CANCEL: 'Cancel',
+};
+
 export {
   BlankTripPoint,
   DateFormats,
   FilterType,
   SortTypes,
   DestinationEmptyMassages,
+  Mode,
+  ButtonTypes,
   POINT_TYPES,
   CITIES,
   FILTER_TYPES,

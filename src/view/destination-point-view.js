@@ -1,6 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { displayDate, displayDateMonth, displayDateTime, displayTime, calculateDuration } from './utils/date.js';
 import { isEmpty } from './utils/common.js';
+import { render } from '../framework/render.js';
 
 
 const createPointScheduleTemplate = (dateFrom, dateTo) => `
@@ -33,7 +34,8 @@ const createDestinationPointTemplate = (tripPoint, offers, destinations) => {
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
   const {name: destinationName} = destinations.find((destination) => destination.id === tripPoint.destination);
   const {offers: typedOffers} = offers.find((offer) => offer.type === type);
-  const selectedOffers = typedOffers.filter((offer) => tripPoint.offers.includes(offer.id));
+  const selectedOffers = typedOffers.filter((offer) => tripPoint.offers.includes(offer.id)); //  проверить ID
+
 
   return `
   <li class="trip-events__item">
@@ -73,7 +75,7 @@ export default class DestinationPointView extends AbstractView {
   #favoriteClickHandler = null;
   #favoriteButton = null;
 
-  constructor({tripPoint, offers, destinations, onEditClick, onFavoriteClick}) {
+  constructor({tripPoint, offers, destinations, container, onEditClick, onFavoriteClick}) {
     super();
     this.#tripPoint = tripPoint;
     this.#offers = offers;
@@ -85,6 +87,7 @@ export default class DestinationPointView extends AbstractView {
 
     this.#rollupButton.addEventListener('click', this.#onClick);
     this.#favoriteButton.addEventListener('click', this.#onFavoriteClick);
+    render(this, container);
   }
 
   get template() {
@@ -107,5 +110,4 @@ export default class DestinationPointView extends AbstractView {
     this.#favoriteClickHandler();
   };
 }
-
 
