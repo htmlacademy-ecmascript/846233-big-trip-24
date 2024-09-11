@@ -5,6 +5,7 @@ export default class HeaderPresenter {
   #model = null;
   #filterContainer = null;
   #infoContainer = null;
+  #filterView = null;
 
   constructor ({container, model}) {
     this.#filterContainer = container.filter;
@@ -22,7 +23,7 @@ export default class HeaderPresenter {
   }
 
   #renderFilters({ filters, currentFilter }) {
-    new FilterView({
+    this.#filterView = new FilterView({
       filters,
       currentFilter,
       container: this.#filterContainer,
@@ -38,3 +39,4 @@ export default class HeaderPresenter {
     this.#model.currentFilter = newFilter;
   };
 }
+

@@ -14,7 +14,7 @@ const pointID = getID();
 const mockedOffers = getMockedOffers();
 
 const createMockPoint = () => {
-  const { id: destinationId } = getRandomDestination();
+  const { id: destinationID } = getRandomDestination();
   const dateStart = getDateWithRandomTime();
   const dateEnd = getDateWithRandomTime(dateStart);
   const type = getRandomArrayElement(POINT_TYPES);
@@ -27,9 +27,9 @@ const createMockPoint = () => {
   return {
     id: pointID(),
     type: type,
-    dateFrom: dateStart,
-    dateTo: dateEnd,
-    destination: destinationId,
+    dateFrom: new Date(dateStart),
+    dateTo: new Date(dateEnd),
+    destination: destinationID,
     price: getRandomInt(1000),
     isFavorite: getRandomBoolean(),
     offers: offerIDs,

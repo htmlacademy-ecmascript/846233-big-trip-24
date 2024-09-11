@@ -8,8 +8,10 @@ dayjs.extend(duration);
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
+const getDateDiff = ({ dateFrom, dateTo }) => dayjs(dateTo).diff(dateFrom);
+
 const calculateDuration = (dateFrom, dateTo) => {
-  const dateDelta = dayjs.duration(dayjs(dateTo).diff(dateFrom));
+  const dateDelta = dayjs.duration(getDateDiff({ dateFrom, dateTo}));
   if (dateDelta.days()) {
     return dateDelta.format(DateFormats.DAY);
   }
@@ -21,9 +23,8 @@ const calculateDuration = (dateFrom, dateTo) => {
   return dateDelta.format(DateFormats.MINUTES);
 };
 
-const getDateDiff = ({ dateFrom, dateTo }) => dayjs(dateTo).diff(dateFrom);
 
-const displayDateMonth = (date) => date ? dayjs(date).format(DateFormats.DATE_MONTH) : '';
+const displayDateMonth = (date) => date ? dayjs(date).format(DateFormats.MONTH_DAY) : '';
 const displayDate = (date) => date ? dayjs(date).format(DateFormats.DATE) : '';
 const displayTime = (time) => time ? dayjs(time).format(DateFormats.TIME) : '';
 const displayDateTime = (date, dateFormat = DateFormats.DATE_TIME_SYSTEM) => date ? dayjs(date).format(dateFormat) : '';
