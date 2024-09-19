@@ -1,51 +1,33 @@
+import Observable from '../framework/observable.js';
 import { getMockedPoints } from '../mock/point-mock.js';
 import { getMockedDestinations } from '../mock/destination.js';
 import { getMockedOffers } from '../mock/offer-mock.js';
-import { FilterType, SortTypes } from '../const.js';
-import { sortByDay, sortByTime, sortByPrice } from '../view/utils/common.js';
+import { FilterType, SortTypes, UpdateType } from '../const.js';
+import { FilteredTypes } from '../view/utils/filter.js';
+import { SortedTypes } from '../view/utils/sort.js';
+import { removeComponent } from '../view/utils/common.js';
 
-export default class PointModel {
+export default class PointModel extends Observable{
   #tripPoints = [];
   #destinations = [];
   #offers = [];
   #filters = [];
-  #sortTypes = [];
   #defaultFilter = FilterType.EVERYTHING;
   #defaultSortType = SortTypes.DAY;
   #currentFilter = this.#defaultFilter;
   #currentSort = this.#defaultSortType;
 
-  init() {
-    this.destinations = getMockedDestinations();
-    this.offers = getMockedOffers();
-    this.tripPoints = getMockedPoints();
-    this.#filters = Object.values(FilterType);
-    this.#sortTypes = Object.values(SortTypes);
-  }
-
   get tripPoints() {
-    const filteredTripPoints = this.#getFilteredTripPoints(this.#tripPoints, this.#currentFilter);
-    return this.#getSortedTripPoints(filteredTripPoints, this.#currentSort);
-  }
-
-  set tripPoints(tripPoints) {
-    this.#tripPoints = tripPoints;
+    const filteredTripPoints = this.#getFilteredTripPoints(this.#tripPoints, this.currentFilter);
+    return this.#getSortedTripPoints(filteredTripPoints, this.currentSort);
   }
 
   get offers() {
     return this.#offers;
   }
 
-  set offers(offers) {
-    this.#offers = offers;
-  }
-
   get destinations() {
     return this.#destinations;
-  }
-
-  set destinations(destinations) {
-    this.#destinations = destinations;
   }
 
   get filters() {
@@ -56,16 +38,12 @@ export default class PointModel {
     return this.#currentFilter;
   }
 
-  set currentFilter(curFilter) {
-    this.#currentFilter = curFilter;
-  }
-
-  get sortTypes() {
-    const disabledSortTypes = [SortTypes.EVENT, SortTypes.OFFERS];
-    return this.#sortTypes.map((type) => ({
-      type,
-      disabled: disabledSortTypes.includes(type),
-    }));
+  set currentFilter(filter) {
+    if (filter === this.#currentFilter) {
+      return;
+    }
+    this.#currentFilter = filter;
+    this._notify();
   }
 
   get currentSort() {
@@ -78,8 +56,8 @@ export default class PointModel {
 
   get tripInfo() {
     const tripInfo = this.#getSortedTripPoints(this.#tripPoints, this.#defaultSortType);
-    const firstPoint = tripInfo[tripInfo.length - 1];
-    const lastPoint = tripInfo[0];
+    const firstPoint = tripInfo[0];
+    const lastPoint = tripInfo[tripInfo.length - 1];
     const middlePoint = tripInfo.slice(1, -1);
     const middleDestination = middlePoint.length === 1 ? this.#getDestinationName(middlePoint[0].destination) : '...';
     return {
@@ -92,34 +70,44 @@ export default class PointModel {
     };
   }
 
-  #getSortedTripPoints = (tripPoints, sortType) => {
-    switch (sortType) {
-      case SortTypes.DAY:
-        return tripPoints.sort(sortByDay);
-      case SortTypes.TIME:
-        return tripPoints.sort(sortByTime);
-      case SortTypes.PRICE:
-        return tripPoints.sort(sortByPrice);
-      default:
-        return new Error(`Invalid sort type: ${sortType}`);
-    }
-  };
+  init() {
+    this.#destinations = getMockedDestinations();
+    this.#offers = getMockedOffers();
+    this.#tripPoints = getMockedPoints();
+    this.#filters = Object.values(FilterType);
+    this._notify(UpdateType.MAJOR);
+  }
 
-  #getFilteredTripPoints = (tripPoints, filter) => {
-    const currentDate = new Date();
-    switch (filter) {
-      case FilterType.EVERYTHING:
-        return [...tripPoints];
-      case FilterType.FUTURE:
-        return tripPoints.filter((tripPoint) => tripPoint.dateFrom > currentDate);
-      case FilterType.PRESENT:
-        return tripPoints.filter((tripPoint) => tripPoint.dateFrom >= currentDate && tripPoint.dateTo <= currentDate);
-      case FilterType.PAST:
-        return tripPoints.filter((tripPoint) => tripPoint.dateTo < currentDate);
-      default:
-        throw new Error(`Invalid filter : ${filter}`);
-    }
-  };
+  setCurrentFilter(updateType, filterType) {
+    this.#currentSort = filterType;
+    this._notify(updateType, filterType);
+  }
 
+  addTripPoint(updateType, tripPoint) {
+    this.#tripPoints.push(tripPoint);
+    this._notify(updateType, tripPoint);
+  }
+
+  updateTripPoint(updateType, tripPoint) {
+    const selectedPoint = this.#findTripPoint(tripPoint.id);
+    if (!selectedPoint) {
+      throw new Error(`Can't update trip event ${tripPoint.id}`);
+    }
+    Object.assign(selectedPoint, tripPoint);
+    this._notify(updateType, tripPoint);
+  }
+
+  deleteTripPoint(updateType, tripPoint) {
+    const updateTripPoint = this.#findTripPoint(tripPoint.id);
+    if (!updateTripPoint) {
+      throw new Error(`Can't delete trip event ${tripPoint.id}`);
+    }
+    this.#tripPoints = removeComponent(this.#tripPoints, updateTripPoint);
+    this._notify(updateType);
+  }
+
+  #getSortedTripPoints = (tripPoints, sortType) => tripPoints.sort(SortedTypes[sortType]);
+  #getFilteredTripPoints = (tripPoints, filter) => tripPoints.filter(FilteredTypes[filter]);
   #getDestinationName = (id) => this.#destinations.find((destination) => destination.id === id).name;
+  #findTripPoint = (id) => this.#tripPoints.find((tripPoint) => tripPoint.id === id);
 }

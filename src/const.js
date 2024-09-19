@@ -19,11 +19,14 @@ const DESCRIPTIONS = [
   'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.'
 ];
 
-const BlankTripPoint = {
+const MINUTE_IN_MS = 60000;
+
+const BlankTripPoint = { //исправить
+  id: null,
   type: DEFAULT_POINT_TYPE,
   dateFrom: new Date(),
-  dateTo: null,
-  destination: null,
+  dateTo: new Date(Date.now() + MINUTE_IN_MS),
+  destination: '',
   price: 0,
   offers: [],
   isFavorite: false,
@@ -34,21 +37,22 @@ const SortTypes = {
   EVENT: 'event',
   TIME: 'time',
   PRICE: 'price',
-  OFFERS: 'offers'
+  OFFER: 'offers'
 };
+
+const SortInputTypes = [
+  { type: SortTypes.DAY, sortable: true },
+  { type: SortTypes.EVENT, sortable: false },
+  { type: SortTypes.TIME, sortable: true },
+  { type: SortTypes.PRICE, sortable: true },
+  { type: SortTypes.OFFER, sortable: false },
+];
 
 const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
   PRESENT: 'present',
   PAST: 'past',
-};
-
-const DestinationEmptyMassages = {
-  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
-  [FilterType.FUTURE]: 'There are no past events now',
-  [FilterType.PRESENT]: 'There are no past events now',
-  [FilterType.PAST]: 'There are no past events now',
 };
 
 const DateFormats = {
@@ -76,10 +80,25 @@ const Mode = {
 
 const ButtonTypes = {
   SAVE: 'Save',
-  SAVING: 'Saving',
+  SAVING: 'Saving...',
   DELETE: 'Delete',
-  DELETING: 'Deleting',
+  DELETING: 'Deleting...',
   CANCEL: 'Cancel',
+};
+
+const UserAction = {
+  ADD: 'ADD',
+  UPDATE: 'UPDATE',
+  DELETE: 'DELETE',
+  SORT: 'SORT',
+  FILTER: 'FILTER',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+  ERROR: 'ERROR',
 };
 
 export {
@@ -87,10 +106,12 @@ export {
   DateFormats,
   FilterType,
   SortTypes,
-  DestinationEmptyMassages,
   Mode,
   ButtonTypes,
   DefaultFlatpickrConfig,
+  SortInputTypes,
+  UserAction,
+  UpdateType,
   POINT_TYPES,
   CITIES,
   FILTER_TYPES,
@@ -100,6 +121,7 @@ export {
   POINT_COUNT,
   MESSAGES,
   OFFERS,
-  DESCRIPTIONS
+  DESCRIPTIONS,
+  MINUTE_IN_MS
 };
 

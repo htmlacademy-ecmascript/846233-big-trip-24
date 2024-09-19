@@ -1,7 +1,9 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { displayDate, displayDateMonth, displayDateTime, displayTime, calculateDuration } from './utils/date.js';
 import { isEmpty } from './utils/common.js';
-import { render } from '../framework/render.js';
+import { render, remove } from '../framework/render.js';
+import he from 'he';
+import { BlankTripPoint } from '../const.js';
 
 
 const createPointScheduleTemplate = (dateFrom, dateTo) => `
@@ -15,19 +17,14 @@ const createPointScheduleTemplate = (dateFrom, dateTo) => `
 </div>
 `;
 
-const createOffersTemplate = (offers) => {
-  if (isEmpty(offers)) {
-    return '';
-  }
-
-  return offers.map(({ title, price }) => `
-  <li class="event__offer">
-    <span class="event__offer-title">${title}</span>
-    &plus;&euro;&nbsp;
-    <span class="event__offer-price">${price}</span>
-  </li>
-  `).join('');
-};
+const createOffersTemplate = (offers) => isEmpty(offers) ? '' :
+  offers.map(({ title, price }) => `
+    <li class="event__offer">
+      <span class="event__offer-title">${he.encode(title)}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${he.encode(price.toString())}</span>
+    </li>
+    `).join('');
 
 const createDestinationPointTemplate = (tripPoint, offers, destinations) => {
   const { type, dateFrom, dateTo, price, isFavorite } = tripPoint;
@@ -75,7 +72,7 @@ export default class DestinationPointView extends AbstractView {
   #favoriteClickHandler = null;
   #favoriteButton = null;
 
-  constructor({tripPoint, offers, destinations, container, onEditClick, onFavoriteClick}) {
+  constructor({tripPoint = BlankTripPoint, offers, destinations, container, onEditClick, onFavoriteClick}) { // поменять на snake
     super();
     this.#tripPoint = tripPoint;
     this.#offers = offers;
@@ -91,8 +88,13 @@ export default class DestinationPointView extends AbstractView {
   }
 
   get template() {
-    return createDestinationPointTemplate(this.#tripPoint, this.#offers, this.#destinations);// ???
+    return createDestinationPointTemplate(this.#tripPoint, this.#offers, this.#destinations);
   }
+
+  destroy() {
+    remove(this);
+  }
+
 
   removeElement() {
     super.removeElement();
