@@ -1,8 +1,9 @@
-import { replace, remove } from '../framework/render.js';
+import { replace } from '../framework/render.js';
 import FormEditView from '../view/form-edit-view.js';
 import DestinationPointView from '../view/destination-point-view.js';
 import { isEscapeKey } from '../view/utils/common.js';
-import { Mode } from '../const.js';
+import { Mode, UserAction, UpdateType} from '../const.js';
+import { isDatesEqual } from '../view/utils/date.js';
 
 
 export default class PointPresenter {
@@ -22,21 +23,39 @@ export default class PointPresenter {
     this.#modeChangeHandler = onModeChange;
   }
 
+  get mode() {
+    return this.#mode;
+  }
+
+  set mode(newMode) {
+    if (this.mode === newMode) {
+      return;
+    }
+
+    switch (newMode) {
+      case Mode.VIEW:
+        this.#switchToViewMode();
+        break;
+      case Mode.EDIT:
+        this.#switchToEditMode();
+        break;
+    }
+    this.#mode = newMode;
+  }
+
   init(tripPoint) {
     this.#tripPoint = tripPoint;
     this.#renderTripPoint(tripPoint);
   }
 
   destroy() {
-    remove(this.#destinationPointView);
-    remove(this.#formEditView);
+    this.#destinationPointView.destroy();
+    this.#formEditView.destroy();
+    this.#removeListeners();
   }
 
   reset() {
-    if (this.#mode !== Mode.VIEW) {
-      this.#formEditView.reset(this.#tripPoint);
-      this.#switchToViewMode();
-    }
+    this.mode = Mode.VIEW;
   }
 
   #renderTripPoint(tripPoint) {
@@ -59,6 +78,7 @@ export default class PointPresenter {
       offers,
       destinations,
       onFormSubmit: this.#onFormSubmit,
+      onFormDelete: this.#onFormDelete,
       onFormCancel: this.#onFormCancel,
     });
 
@@ -66,49 +86,62 @@ export default class PointPresenter {
       return;
     }
 
-    if (this.#mode === Mode.EDIT) {
+    if (this.mode === Mode.EDIT) {
       replace(this.#formEditView, prevFormEditView);
     }
 
-    if (this.#mode === Mode.VIEW) {
+    if (this.mode === Mode.VIEW) {
       this.#formEditView.reset(tripPoint);
       replace(this.#destinationPointView, prevDestinationPointView);
     }
 
-    remove(prevDestinationPointView);
-    remove(prevFormEditView);
+    prevDestinationPointView.destroy();
+    prevFormEditView.destroy();
   }
 
   #onFormSubmit = (tripPoint) => {
-    this.#destinationPointChangeHandler(tripPoint);
-    this.#switchToViewMode();
+    const isMinorUpdate = !isDatesEqual(this.#tripPoint.dateFrom, tripPoint.dateFrom) ||
+      !isDatesEqual(this.#tripPoint.dateTo, tripPoint.dateTo) ;
+    this.#destinationPointChangeHandler(UserAction.UPDATE, isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH, tripPoint);
   };
 
-  #onEditClick = () => this.#switchToEditMode();
-  #onFormCancel = () => this.#switchToViewMode();
+  #onFormDelete = (tripPoint) => {
+    if (tripPoint.id) {
+      this.#destinationPointChangeHandler(
+        UserAction.DELETE,
+        UpdateType.MINOR,
+        tripPoint
+      );
+    }
+  };
 
-  #onFavoriteClick = () => this.#destinationPointChangeHandler({
-    ...this.#tripPoint,
-    isFavorite: !this.#tripPoint.isFavorite,
-  });
+  #onFavoriteClick = () => this.#destinationPointChangeHandler(
+    UserAction.UPDATE,
+    UpdateType.PATCH,
+    { ...this.#tripPoint, isFavorite: !this.#tripPoint.isFavorite }
+  );
 
   #switchToEditMode() {
     replace(this.#formEditView, this.#destinationPointView);
-    document.addEventListener('keydown', this.#onEscKeydown);
+    this.#addListeners();
     this.#modeChangeHandler();
-    this.#mode = Mode.EDIT;
   }
 
   #switchToViewMode() {
+    this.#formEditView.reset(this.#tripPoint);
     replace(this.#destinationPointView, this.#formEditView);
-    document.removeEventListener('keydown', this.#onEscKeydown);
-    this.#mode = Mode.VIEW;
+    this.#removeListeners();
   }
 
   #onEscKeydown = (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
-      this.#switchToViewMode();
+      this.mode = Mode.VIEW;
     }
   };
+
+  #onEditClick = () => (this.mode = Mode.EDIT);
+  #onFormCancel = () => (this.mode = Mode.VIEW);
+  #addListeners = () => document.addEventListener('keydown', this.#onEscKeydown);
+  #removeListeners = () => document.removeEventListener('keydown', this.#onEscKeydown);
 }

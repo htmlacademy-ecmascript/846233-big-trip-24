@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { render, remove } from '../framework/render.js';
-import { DestinationEmptyMassages } from '../const.js';
+import { DestinationEmptyMassages } from './utils/filter.js';
 
 const createEmptyTemplate = (filters) => `
   <p class="trip-events__msg">${DestinationEmptyMassages[filters]}</p>`;
