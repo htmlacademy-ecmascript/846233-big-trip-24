@@ -48,6 +48,13 @@ const Filters = {
   PAST: 'past',
 };
 
+const TripEmptyMessages = {
+  [Filters.EVERYTHING]: 'Click New Event to create your first point',
+  [Filters.FUTURE]: 'There are no future events now',
+  [Filters.PRESENT]: 'There are no present events now',
+  [Filters.PAST]: 'There are no past events now',
+};
+
 const DateFormats = {
   DAY_MONTH: 'D MMM',
   MONTH_DAY: 'MMM D',
@@ -105,6 +112,11 @@ const Prefix = {
   SORT: 'sort-'
 };
 
+const UiBlockerConfig = {
+  lowerLimit: 350,
+  upperLimit: 1000
+};
+
 
 export {
   BLANK_POINT,
@@ -114,6 +126,7 @@ export {
   SortTypes,
   SortInputTypes,
   Filters,
+  TripEmptyMessages,
   DateFormats,
   ButtonTypes,
   DefaultFlatpickrConfig,
@@ -121,5 +134,6 @@ export {
   UpdateType,
   FormMode,
   Messages,
-  Prefix
+  Prefix,
+  UiBlockerConfig
 };

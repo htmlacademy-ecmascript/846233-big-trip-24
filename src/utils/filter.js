@@ -1,11 +1,5 @@
 import { Filters } from '../const/common.js';
 
-const TripEmptyMessages = {
-  [Filters.EVERYTHING]: 'Click New Event to create your first point',
-  [Filters.FUTURE]: 'There are no future events now',
-  [Filters.PRESENT]: 'There are no present events now',
-  [Filters.PAST]: 'There are no past events now',
-};
 
 const FilterFunctions = {
   [Filters.EVERYTHING]: () => true,
@@ -14,4 +8,6 @@ const FilterFunctions = {
   [Filters.PAST]: (point) => point.dateTo < new Date(),
 };
 
-export { TripEmptyMessages, FilterFunctions };
+const getFiltered = (items, filterType) => items.filter(FilterFunctions[filterType]);
+
+export { getFiltered };

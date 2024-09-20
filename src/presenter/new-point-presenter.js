@@ -14,7 +14,7 @@ export default class NewPointPresenter {
     this.#pointDestroyHandler = onDestroy;
   }
 
-  init({ offers, destinations }) {
+  init = ({ offers, destinations }) => {
     if (this.#editView !== null) {
       return;
     }
@@ -28,9 +28,9 @@ export default class NewPointPresenter {
 
     render(this.#editView, this.#container, RenderPosition.AFTERBEGIN);
     document.addEventListener('keydown', this.#onEscKeydown);
-  }
+  };
 
-  destroy() {
+  destroy = () => {
     if (this.#editView === null) {
       return;
     }
@@ -39,12 +39,22 @@ export default class NewPointPresenter {
     this.#editView = null;
     document.removeEventListener('keydown', this.#onEscKeydown);
     this.#pointDestroyHandler();
-  }
-
-  #onFormSubmit = (point) => {
-    this.#pointChangeHandler(UserAction.ADD, UpdateType.MAJOR, point);
-    this.destroy();
   };
+
+  setSaving = () => this.#editView.updateElement({ isSaving: true });
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#editView.updateElement({
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#editView.shake(resetFormState);
+  };
+
+  #onFormSubmit = (point) => this.#pointChangeHandler(UserAction.ADD, UpdateType.MAJOR, point);
 
   #onFormCancel = () => this.destroy();
 

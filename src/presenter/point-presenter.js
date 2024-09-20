@@ -41,22 +41,51 @@ export default class PointPresenter {
     this.#mode = newMode;
   }
 
-  init(point) {
+  init = (point) => {
     this.#point = point;
     this.#renderPoint(point);
-  }
+  };
 
-  destroy() {
+  destroy = () => {
     this.#pointView.destroy();
     this.#editView.destroy();
     this.#removeListeners();
-  }
+  };
 
-  resetView() {
+  resetView = () => {
     this.mode = FormMode.VIEW;
-  }
+  };
 
-  #renderPoint(tripEvent) { //?
+  setSaving = () => {
+    if (this.#mode === FormMode.EDIT) {
+      this.#editView.updateElement({ isSaving: true });
+    }
+  };
+
+  setDeleting = () => {
+    if (this.#mode === FormMode.EDIT) {
+      this.#editView.updateElement({ isDeleting: true });
+    }
+  };
+
+  setAborting = () => {
+    if (this.#mode === FormMode.VIEW) {
+      this.#pointView.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#editView.updateElement({
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#editView.shake(resetFormState);
+  };
+
+
+  #renderPoint = (tripEvent) => { //?
     const offers = this.#model.offers;
     const destinations = this.#model.destinations;
 
@@ -96,22 +125,28 @@ export default class PointPresenter {
 
     prevPointView.destroy();
     prevEditView.destroy();
-  }
+  };
 
-  #switchToEditMode() {
+  #switchToEditMode = () => {
     replace(this.#editView, this.#pointView);
     this.#addListeners();
     this.#changeModeHandler();
-  }
+  };
 
-  #switchToViewMode() {
+  #switchToViewMode = () => {
     this.#editView.reset(this.#point);
     replace(this.#pointView, this.#editView);
     this.#removeListeners();
-  }
+  };
 
-  #onEditClick = () => (this.mode = FormMode.EDIT);
-  #onFormCancel = () => (this.mode = FormMode.VIEW);
+  #onEditClick = () => {
+    this.mode = FormMode.EDIT;
+  };
+
+  #onFormCancel = () => {
+    this.mode = FormMode.VIEW;
+  };
+
   #addListeners = () => document.addEventListener('keydown', this.#onEscKeydown);
   #removeListeners = () => document.removeEventListener('keydown', this.#onEscKeydown);
 
