@@ -1,7 +1,7 @@
-import AbstractView from '../framework/view/abstract-view.js';
-import { remove, render, RenderPosition } from '../framework/render.js';
-import { firstLetterUpperCase, getIsCheckedAttr, getIsDisabledAttr } from '../utils/common.js';
-import { SortInputTypes, Prefix } from '../const/common.js';
+import AbstractView from '../framework/view/abstract-view';
+import { remove, render, RenderPosition } from '../framework/render';
+import { firstLetterUpperCase, getIsCheckedAttr, getIsDisabledAttr } from '../utils/common';
+import { SortInputTypes, Prefix } from '../const/common';
 
 
 const getSortItemTemplate = (type, isChecked, isDisabled) => `

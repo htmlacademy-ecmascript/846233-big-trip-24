@@ -1,21 +1,22 @@
-import { Filters, DEFAULT_FILTER, DEFAULT_SORT_TYPE, UpdateType } from '../const/common.js';
-import { BASE_URL, AUTHORIZATION } from '../const/api.js';
-import TripApiService from '../trip-api-service.js';
-import Observable from '../framework/observable.js';
-import { removeItem } from '../utils/common.js';
-import { getInfo } from './utils/info.js';
-import { getSorted } from '../utils/sort.js';
+import { Filter, DEFAULT_FILTER, DEFAULT_SORT_TYPE, UpdateType } from '../const/common';
+import { BASE_URL, AUTHORIZATION } from '../const/api';
+import TripApiService from '../trip-api-service';
+import Observable from '../framework/observable';
+import { removeItem } from '../utils/common';
+import { getInfo } from './utils/info';
+import { getSorted } from '../utils/sort';
+
 export default class PointModel extends Observable {
   #destinations = [];
   #offers = [];
-  #trip = [];
+  #points = [];
   #filters = [];
   #currentFilter = DEFAULT_FILTER;
   #currentSort = DEFAULT_SORT_TYPE;
   #tripApiService = new TripApiService(BASE_URL, AUTHORIZATION);
 
-  get trip() {
-    return this.#trip;
+  get points() {
+    return this.#points;
   }
 
   get offers() {
@@ -43,24 +44,23 @@ export default class PointModel extends Observable {
   }
 
   get info() {
-    const sortedTrip = getSorted(this.#trip, DEFAULT_SORT_TYPE);
-    return getInfo(sortedTrip, this.#destinations, this.#offers);
+    const sortedPoints = getSorted(this.#points, DEFAULT_SORT_TYPE);
+    return getInfo(sortedPoints, this.#destinations, this.#offers);
   }
 
   init = async () => {
     try {
       this.#destinations = await this.#tripApiService.getDestinations();
       this.#offers = await this.#tripApiService.getOffers();
-      this.#trip = (await this.#tripApiService.getPoints()).map(TripApiService.adaptToClient);
+      this.#points = (await this.#tripApiService.getPoints()).map(TripApiService.adaptToClient);
+      this.#filters = Object.values(Filter);
+      this._notify(UpdateType.INIT);
     } catch(error) {
       this.#destinations = [];
       this.#offers = [];
-      this.#trip = [];
+      this.#points = [];
       this._notify(UpdateType.ERROR);
     }
-
-    this.#filters = Object.values(Filters);
-    this._notify(UpdateType.INIT);
   };
 
   setCurrentFilter = (updateType, filterType) => {
@@ -71,7 +71,7 @@ export default class PointModel extends Observable {
   addPoint = async (updateType, point) => {
     try {
       const newPoint = await this.#tripApiService.addPoint(point);
-      this.#trip.push(newPoint);
+      this.#points.push(newPoint);
       this._notify(updateType, newPoint);
     } catch(error) {
       throw new Error(`Add error: ${error.message}`);
@@ -100,12 +100,12 @@ export default class PointModel extends Observable {
     }
     try {
       await this.#tripApiService.deletePoint(point);
-      this.#trip = removeItem(this.#trip, selectedPoint);
+      this.#points = removeItem(this.#points, selectedPoint);
       this._notify(updateType);
     } catch(error) {
       throw new Error(`Delete error: ${error.message}`);
     }
   };
 
-  #findPoint = (id) => this.#trip.find((point) => point.id === id);
+  #findPoint = (id) => this.#points.find((point) => point.id === id);
 }

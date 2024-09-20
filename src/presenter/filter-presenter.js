@@ -1,6 +1,8 @@
-import FilterView from '../view/filter-view.js';
-import { replace } from '../framework/render.js';
-import { UpdateType } from '../const/common.js';
+import FilterView from '../view/filter-view';
+import { replace } from '../framework/render';
+import { UpdateType } from '../const/common';
+import { getFiltered } from '../utils/filter';
+import { isEmpty } from '../utils/common';
 
 export default class FilterPresenter {
   #model = null;
@@ -10,19 +12,22 @@ export default class FilterPresenter {
   constructor ({ container, model }) {
     this.#container = container;
     this.#model = model;
-    this.init();
     this.#model.addObserver(this.#onModelChange);
   }
 
-  init() {
-    this.#renderFilters(this.#model);
+  get filters() {
+    const { filters, points } = this.#model;
+    return filters.map((type) => ({
+      type,
+      disabled: isEmpty(getFiltered(points, type))
+    }));
   }
 
-  #renderFilters({ filters, currentFilter }) {
+  #renderFilters = ({ currentFilter }) => {
     const prevFilterView = this.#filterView;
 
     this.#filterView = new FilterView({
-      filters,
+      filters: this.filters,
       currentFilter,
       container: this.#container,
       onFilterChange: this.#onFilterChange
@@ -34,11 +39,8 @@ export default class FilterPresenter {
 
     replace(this.#filterView, prevFilterView);
     prevFilterView.destroy();
-  }
-
-  #onFilterChange = (filterType) => {
-    this.#model.setCurrentFilter(UpdateType.MAJOR, filterType);
   };
 
-  #onModelChange = () => this.init();
+  #onFilterChange = (filterType) => this.#model.setCurrentFilter(UpdateType.MAJOR, filterType);
+  #onModelChange = () => this.#renderFilters(this.#model);
 }
