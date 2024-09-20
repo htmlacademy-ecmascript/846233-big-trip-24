@@ -1,6 +1,6 @@
-import ApiService from './framework/api-service.js';
-import { ApiMethod, ApiRoute } from './const/api.js';
-import { toCamelCaseKeys, toSnakeCaseKeys } from './utils/api.js';
+import ApiService from './framework/api-service';
+import { ApiMethod, ApiRoute } from './const/api';
+import { toCamelCaseKeys, toSnakeCaseKeys } from './model/utils/api';
 
 export default class TripApiService extends ApiService {
   getPoints = async () => ApiService.parseResponse(

@@ -1,6 +1,7 @@
 import { render, RenderPosition } from '../framework/render.js';
 import EditView from '../view/edit-view.js';
 import { UserAction, UpdateType } from '../const/common.js';
+import { isEscKeydown } from '../utils/common.js';
 
 export default class NewPointPresenter {
   #container = null;
@@ -41,25 +42,14 @@ export default class NewPointPresenter {
     this.#pointDestroyHandler();
   };
 
-  setSaving = () => this.#editView.updateElement({ isSaving: true });
-
-  setAborting = () => {
-    const resetFormState = () => {
-      this.#editView.updateElement({
-        isSaving: false,
-        isDeleting: false,
-      });
-    };
-
-    this.#editView.shake(resetFormState);
-  };
+  setSaving = (isSaving = true) => this.#editView.updateElement({ isSaving });
+  setAborting = () => this.#editView.shake(this.setSaving(false));
 
   #onFormSubmit = (point) => this.#pointChangeHandler(UserAction.ADD, UpdateType.MAJOR, point);
-
   #onFormCancel = () => this.destroy();
 
   #onEscKeydown = (evt) => {
-    if (evt.key === 'Escape') {
+    if (isEscKeydown(evt)) {
       evt.stopPropagation();
       this.destroy();
     }

@@ -1,5 +1,5 @@
-import AbstractView from '../framework/view/abstract-view.js';
-import { render, remove } from '../framework/render.js';
+import AbstractView from '../framework/view/abstract-view';
+import { render, remove } from '../framework/render';
 
 const getLoadingTemplate = (message) => `<p class="trip-events__msg">${message}</p>`;
 

@@ -1,7 +1,7 @@
-import AbstractView from '../framework/view/abstract-view.js';
-import { firstLetterUpperCase, getIsCheckedAttr, getIsDisabledAttr } from '../utils/common.js';
-import { render, remove } from '../framework/render.js';
-import { Prefix } from '../const/common.js';
+import AbstractView from '../framework/view/abstract-view';
+import { firstLetterUpperCase, getIsCheckedAttr, getIsDisabledAttr } from '../utils/common';
+import { render, remove } from '../framework/render';
+import { Prefix } from '../const/common';
 
 
 const getFilterItemTemplate = (value, isChecked, isDisabled) => `
@@ -14,7 +14,7 @@ const getFilterItemTemplate = (value, isChecked, isDisabled) => `
 
 const getFiltersTemplate = (filters, currentFilter) => `
   <form class="trip-filters" action="#" method="get">
-    ${filters.map((filter) => getFilterItemTemplate(filter, filter === currentFilter, false)).join('')}
+     ${filters.map(({ type, disabled }) => getFilterItemTemplate(type, type === currentFilter, disabled)).join('')}
     <button class="visually-hidden" type="submit">Accept filter</button>
   </form>
 `;

@@ -1,7 +1,7 @@
-import TripPresenter from './presenter/trip-presenter.js';
-import FilterPresenter from './presenter/filter-presenter.js';
-import PointModel from './model/point-model.js';
-import InfoPresenter from './presenter/info-presenter.js';
+import PointsPresenter from './presenter/points-presenter';
+import FilterPresenter from './presenter/filter-presenter';
+import PointModel from './model/point-model';
+import InfoPresenter from './presenter/info-presenter';
 
 const run = async () => {
   const eventsElement = document.querySelector('.trip-events');
@@ -13,7 +13,7 @@ const run = async () => {
 
   new InfoPresenter({ container: mainElement, model: pointModel });
   new FilterPresenter({ container: filtersElement, model: pointModel });
-  new TripPresenter({ container: eventsElement, model: pointModel, addButton: addButtonElement });
+  new PointsPresenter({ container: eventsElement, model: pointModel, addButton: addButtonElement });
 
   await pointModel.init();
 };
