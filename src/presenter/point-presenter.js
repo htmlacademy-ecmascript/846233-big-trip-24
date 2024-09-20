@@ -1,26 +1,24 @@
+import EditView from '../view/edit-view.js';
+import PointView from '../view/point-view.js';
 import { replace } from '../framework/render.js';
-import FormEditView from '../view/form-edit-view.js';
-import DestinationPointView from '../view/destination-point-view.js';
-import { isEscapeKey } from '../view/utils/common.js';
-import { Mode, UserAction, UpdateType} from '../const.js';
-import { isDatesEqual } from '../view/utils/date.js';
-
+import { UserAction, UpdateType, FormMode } from '../const/common.js';
+import { isDatesEqual } from '../utils/date.js';
 
 export default class PointPresenter {
-  #tripPoint = null;
+  #point = null;
   #model = null;
   #container = null;
-  #destinationPointView = null;
-  #formEditView = null;
-  #destinationPointChangeHandler = null;
-  #modeChangeHandler = null;
-  #mode = Mode.VIEW;
+  #pointView = null;
+  #editView = null;
+  #pointChangeHandler = null;
+  #changeModeHandler = null;
+  #mode = FormMode.VIEW;
 
-  constructor({ model, container, onDestinationPointChange, onModeChange}) {
+  constructor({ model, container, onPointChange, onModeChange }) {
     this.#model = model;
     this.#container = container;
-    this.#destinationPointChangeHandler = onDestinationPointChange;
-    this.#modeChangeHandler = onModeChange;
+    this.#pointChangeHandler = onPointChange;
+    this.#changeModeHandler = onModeChange;
   }
 
   get mode() {
@@ -33,39 +31,40 @@ export default class PointPresenter {
     }
 
     switch (newMode) {
-      case Mode.VIEW:
+      case FormMode.VIEW:
         this.#switchToViewMode();
         break;
-      case Mode.EDIT:
+      case FormMode.EDIT:
         this.#switchToEditMode();
         break;
     }
     this.#mode = newMode;
   }
 
-  init(tripPoint) {
-    this.#tripPoint = tripPoint;
-    this.#renderTripPoint(tripPoint);
+  init(point) {
+    this.#point = point;
+    this.#renderPoint(point);
   }
 
   destroy() {
-    this.#destinationPointView.destroy();
-    this.#formEditView.destroy();
+    this.#pointView.destroy();
+    this.#editView.destroy();
     this.#removeListeners();
   }
 
-  reset() {
-    this.mode = Mode.VIEW;
+  resetView() {
+    this.mode = FormMode.VIEW;
   }
 
-  #renderTripPoint(tripPoint) {
+  #renderPoint(tripEvent) { //?
     const offers = this.#model.offers;
     const destinations = this.#model.destinations;
-    const prevDestinationPointView = this.#destinationPointView;
-    const prevFormEditView = this.#formEditView;
 
-    this.#destinationPointView = new DestinationPointView({
-      tripPoint,
+    const prevPointView = this.#pointView;
+    const prevEditView = this.#editView;
+
+    this.#pointView = new PointView({
+      tripEvent,
       offers,
       destinations,
       container: this.#container,
@@ -73,8 +72,8 @@ export default class PointPresenter {
       onFavoriteClick: this.#onFavoriteClick,
     });
 
-    this.#formEditView = new FormEditView({
-      tripPoint,
+    this.#editView = new EditView({ //?
+      tripEvent,
       offers,
       destinations,
       onFormSubmit: this.#onFormSubmit,
@@ -82,66 +81,58 @@ export default class PointPresenter {
       onFormCancel: this.#onFormCancel,
     });
 
-    if (prevDestinationPointView === null || prevFormEditView === null) {
+    if (prevPointView === null || prevEditView === null) {
       return;
     }
 
-    if (this.mode === Mode.EDIT) {
-      replace(this.#formEditView, prevFormEditView);
+    if (this.mode === FormMode.EDIT) {
+      replace(this.#editView, prevEditView);
     }
 
-    if (this.mode === Mode.VIEW) {
-      this.#formEditView.reset(tripPoint);
-      replace(this.#destinationPointView, prevDestinationPointView);
+    if (this.mode === FormMode.VIEW) {
+      this.#editView.reset(tripEvent);
+      replace(this.#pointView, prevPointView);
     }
 
-    prevDestinationPointView.destroy();
-    prevFormEditView.destroy();
+    prevPointView.destroy();
+    prevEditView.destroy();
   }
 
-  #onFormSubmit = (tripPoint) => {
-    const isMinorUpdate = !isDatesEqual(this.#tripPoint.dateFrom, tripPoint.dateFrom) ||
-      !isDatesEqual(this.#tripPoint.dateTo, tripPoint.dateTo) ;
-    this.#destinationPointChangeHandler(UserAction.UPDATE, isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH, tripPoint);
-  };
-
-  #onFormDelete = (tripPoint) => {
-    if (tripPoint.id) {
-      this.#destinationPointChangeHandler(
-        UserAction.DELETE,
-        UpdateType.MINOR,
-        tripPoint
-      );
-    }
-  };
-
-  #onFavoriteClick = () => this.#destinationPointChangeHandler(
-    UserAction.UPDATE,
-    UpdateType.PATCH,
-    { ...this.#tripPoint, isFavorite: !this.#tripPoint.isFavorite }
-  );
-
   #switchToEditMode() {
-    replace(this.#formEditView, this.#destinationPointView);
+    replace(this.#editView, this.#pointView);
     this.#addListeners();
-    this.#modeChangeHandler();
+    this.#changeModeHandler();
   }
 
   #switchToViewMode() {
-    this.#formEditView.reset(this.#tripPoint);
-    replace(this.#destinationPointView, this.#formEditView);
+    this.#editView.reset(this.#point);
+    replace(this.#pointView, this.#editView);
     this.#removeListeners();
   }
 
-  #onEscKeydown = (evt) => {
-    if (isEscapeKey(evt)) {
-      evt.preventDefault();
-      this.mode = Mode.VIEW;
-    }
-  };
-
-  #onEditClick = () => (this.mode = Mode.EDIT);
-  #onFormCancel = () => (this.mode = Mode.VIEW);
+  #onEditClick = () => (this.mode = FormMode.EDIT);
+  #onFormCancel = () => (this.mode = FormMode.VIEW);
   #addListeners = () => document.addEventListener('keydown', this.#onEscKeydown);
   #removeListeners = () => document.removeEventListener('keydown', this.#onEscKeydown);
+
+  #onFormDelete = (point) => {
+    this.#pointChangeHandler(UserAction.DELETE, UpdateType.MINOR, point);
+  };
+
+  #onFormSubmit = (point) => {
+    const isMinorUpdate = !isDatesEqual(this.#point.dateFrom, point.dateFrom) ||
+      !isDatesEqual(this.#point.dateTo, point.dateTo) ;
+    this.#pointChangeHandler(UserAction.UPDATE, isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH, point);
+  };
+
+  #onFavoriteClick = () => this.#pointChangeHandler(UserAction.UPDATE, UpdateType.PATCH,
+    { ...this.#point, isFavorite: !this.#point.isFavorite }
+  );
+
+  #onEscKeydown = (evt) => {
+    if (evt.key === 'Escape') {
+      evt.stopPropagation();
+      this.mode = FormMode.VIEW;
+    }
+  };
 }
