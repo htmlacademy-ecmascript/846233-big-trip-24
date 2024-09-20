@@ -1,4 +1,4 @@
-import { BLANK_POINT, POINT_TYPES, DateFormats, ButtonTypes, DefaultFlatpickrConfig } from '../const/common';
+import { BLANK_POINT, POINT_TYPES, DateFormats, ButtonTypes, DefaultFlatpickrConfig } from '../const/common.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { displayDateTime } from '../utils/date.js';
 import { remove } from '../framework/render.js';

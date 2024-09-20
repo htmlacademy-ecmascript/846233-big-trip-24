@@ -7,4 +7,6 @@ const SortFunctions = {
   [SortTypes.PRICE]: (pointA, pointB) => pointB.basePrice - pointA.basePrice,
 };
 
-export { SortFunctions };
+const getSorted = (items, sortType) => items.sort(SortFunctions[sortType]);
+
+export { getSorted };
