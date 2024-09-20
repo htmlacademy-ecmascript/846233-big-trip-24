@@ -1,19 +1,20 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { render, remove, RenderPosition } from '../framework/render.js';
-import { firstLetterUpperCase, getIsCheckedAttr, getIsDisabledAttr } from './utils/common.js';
-import { SortInputTypes } from '../const.js';
+import { remove, render, RenderPosition } from '../framework/render.js';
+import { firstLetterUpperCase, getIsCheckedAttr, getIsDisabledAttr } from '../utils/common.js';
+import { SortInputTypes, Prefix } from '../const/common.js';
 
-const createSortItemTemplate = (type, isChecked, isDisabled) => `
-    <div class="trip-sort__item  trip-sort__item--${type}">
-      <input id="sort-${type}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort"
-        value="sort-${type}" ${getIsCheckedAttr(isChecked)} ${getIsDisabledAttr(isDisabled)}>
-      <label class="trip-sort__btn" for="sort-${type}">${firstLetterUpperCase(type)}</label>
-    </div>
+
+const getSortItemTemplate = (type, isChecked, isDisabled) => `
+  <div class="trip-sort__item  trip-sort__item--${type}">
+    <input id="sort-${type}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort"
+      value="sort-${type}" ${getIsCheckedAttr(isChecked)} ${getIsDisabledAttr(isDisabled)}>
+    <label class="trip-sort__btn" for="sort-${type}">${firstLetterUpperCase(type)}</label>
+  </div>
 `;
 
-const createSortTemplate = (currentSortType) => `
+const getSortingTemplate = (currentSortType) => `
   <form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-    ${SortInputTypes.map(({ type, sortable }) => createSortItemTemplate(type, type === currentSortType, !sortable)).join('')}
+    ${SortInputTypes.map(({ type, sortable }) => getSortItemTemplate(type, type === currentSortType, !sortable)).join('')}
   </form>
 `;
 
@@ -31,20 +32,18 @@ export default class SortView extends AbstractView {
   }
 
   get template() {
-    return createSortTemplate(this.#currentSort);
+    return getSortingTemplate(this.#currentSort);
   }
 
-  removeElement() {
+  destroy = () => remove(this);
+
+  removeElement = () => {
     this.element.removeEventListener('change', this.#onSortTypeChange);
     super.removeElement();
-  }
+  };
 
   #onSortTypeChange = (evt) => {
     evt.preventDefault();
-    this.#sortTypeChangeHandler(evt.target.value.replace('sort-', ''));
+    this.#sortTypeChangeHandler(evt.target.value.replace(Prefix.SORT, ''));
   };
-
-  destroy() {
-    remove(this);
-  }
 }
